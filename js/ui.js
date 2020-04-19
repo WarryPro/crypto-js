@@ -11,11 +11,16 @@ class Interface {
     makeSelect() {
         contributor.getAPICoins()
             .then(res => {
+                // Sort coins
+                const orderedCoins = {};
+                Object.keys(res.coins.Data).sort().forEach(key => {
+                    orderedCoins[key] = res.coins.Data[key];
+                });
 
                 // creer un select tag 
                 const select = document.getElementById('crypto-currency');
                 // parcourir les données de l'API  
-                for (const [key, value] of Object.entries(res.coins.Data)) {
+                for (const [key, value] of Object.entries(orderedCoins)) {
                     // ajouter Symbole et nom comme options
                     const option = document.createElement('option');
                     option.value = value.Symbol;
@@ -57,7 +62,6 @@ class Interface {
         if (result !== undefined && Object.entries(result).length !== 0) {
 
             let data = result[crypto][currency];
-
             // mettre le prix a deux décimals
             let price = data.PRICE.toFixed(2),
                 lastUpdate = new Date(data.LASTUPDATE * 1000).toLocaleDateString('fr-CH');
@@ -66,7 +70,7 @@ class Interface {
             template = `
                 <div class="card bg-light">
                    <div class="card-body text-dark">
-                        <h2 class="card-title">Result : </h2>
+                        <h2 class="card-title"><img src="https://www.cryptocompare.com/${data.IMAGEURL}" style="max-width:3rem" alt="${data.FROMSYMBOL}"/></h2>
                         <p>Le prix de <strong>${data.FROMSYMBOL}</strong> à <strong>${data.TOSYMBOL}</strong> est de <strong>${price} ${currency} </strong></p>
                         <p>Changement dernier jour : ${data.CHANGEPCTDAY.toFixed(5)}%</p>
                         <p>Dernière mise à jour : le ${lastUpdate} </p>
